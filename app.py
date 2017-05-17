@@ -4,6 +4,7 @@ import os
 import socket
 import json
 from utils import problem
+from subprocess import call
 
 app = Flask(__name__)
 
@@ -37,8 +38,22 @@ def load():
 def interactions():
     return render_template('interaction.html')
 
+
+@app.route("/interaction/satelited")
+def interactions_satelited():
+    return render_template('interaction_satelited.html')
+
+
 if __name__ == "__main__":
-    cnf = problem.Problem("dubois20.cnf")
+    call(['rm', '-f', 'bin/pre-satelited.cnf', 'static/interaction_graph.json', 'static/interaction_graph_satelited.json'])
+    dimacs_file_path = 'bin/dubois20.cnf'
+
+    cnf = problem.Problem(dimacs_file_path)
     problem.generate_interaction_graph(cnf)
-    app.run(host='0.0.0.0', debug=True)
+
+    problem.satelite_it(dimacs_file_path)
+    cnf_satelited = problem.Problem('bin/pre-satelited.cnf')
+    problem.generate_interaction_graph(cnf_satelited)
+
+    app.run()
 

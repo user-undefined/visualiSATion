@@ -1,13 +1,18 @@
 from mxklabs import dimacs
 import json
+from sys import platform as _platform
+from subprocess import call
 
 
 class Problem(object):
     interaction_variables = {}
     interaction_variables_cardinality = {}
+    satelited = False
 
     def __init__(self, filename):
         cnf_problem = dimacs.read(filename)
+        if 'satelited' in filename:
+            self.satelited = True
         self.clauses = cnf_problem.clauses
         self.num_vars = cnf_problem.num_vars
         self.num_clauses = cnf_problem.num_clauses
@@ -51,9 +56,21 @@ def generate_interaction_graph(problem):
         links = [dict(source=str(v), target=str(item), weight=1) for item in i]
         interaction_graph['links'].extend(links)
 
-    with open('static/interaction_graph.json', 'w') as outfile:
+    if problem.satelited:
+        graph_file_path = 'static/interaction_graph_satelited.json'
+    else:
+        graph_file_path = 'static/interaction_graph.json'
+
+    with open(graph_file_path, 'w') as outfile:
         json.dump(interaction_graph, outfile)
 
 
-if __name__ == "__main__":
-    problem = Problem("../dubois20.cnf")
+def satelite_it(dimacs_file_path):
+    if _platform == "linux" or _platform == "linux2":
+        satelite_path = 'bin/SatELite_v1.0_linux'
+    elif _platform == "darwin":
+        satelite_path = 'bin/SatELite_v1.macOS'
+
+    flags = '+pre'
+    call([satelite_path, dimacs_file_path, flags])
+    call(['mv', 'pre-satelited.cnf', 'bin'])
