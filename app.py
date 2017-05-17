@@ -12,13 +12,13 @@ app = Flask(__name__)
 def hello():
     html = "<h3>Hello {name}!</h3>" \
            "<b>Hostname:</b> {hostname}<br/>"
-    print("LOG")
     return html.format(name=os.getenv('NAME', "world"), hostname=socket.gethostname())
 
 
 @app.route("/sat/data")
 def data():
     return json.dumps(problem.read("dubois20.cnf"))
+
 
 @app.route("/load", methods=['GET', 'POST'])
 def load():
@@ -33,5 +33,12 @@ def load():
     '''
 
 
+@app.route("/interaction")
+def interactions():
+    return render_template('interaction.html')
+
 if __name__ == "__main__":
-    app.run(host='0.0.0.0')
+    cnf = problem.Problem("dubois20.cnf")
+    problem.generate_interaction_graph(cnf)
+    app.run(host='0.0.0.0', debug=True)
+
