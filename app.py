@@ -36,24 +36,24 @@ def load():
 
 @app.route("/interaction")
 def interactions():
-    return render_template('interaction.html')
+    cnf = problem.Problem(dimacs_file_path)
+    problem.generate_interaction_graph(cnf)
+    return render_template('interaction.html',
+                            cnf=cnf,
+                            graph_json='interaction_graph.json')
 
 
 @app.route("/interaction/satelited")
 def interactions_satelited():
-    return render_template('interaction_satelited.html')
-
-
-if __name__ == "__main__":
-    call(['rm', '-f', 'bin/pre-satelited.cnf', 'static/interaction_graph.json', 'static/interaction_graph_satelited.json'])
-    dimacs_file_path = 'bin/dubois20.cnf'
-
-    cnf = problem.Problem(dimacs_file_path)
-    problem.generate_interaction_graph(cnf)
-
     problem.satelite_it(dimacs_file_path)
     cnf_satelited = problem.Problem('bin/pre-satelited.cnf')
     problem.generate_interaction_graph(cnf_satelited)
+    return render_template('interaction.html',
+                            cnf=cnf_satelited,
+                            graph_json='interaction_graph_satelited.json')
 
+
+if __name__ == "__main__":
+    dimacs_file_path = 'bin/dubois20.cnf'
     app.run()
 

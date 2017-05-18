@@ -26,7 +26,7 @@
     .force("charge", d3.forceManyBody())
     .force("center", d3.forceCenter(width / 2, height / 2));
 
-  d3.json("{{ url_for('static', filename='interaction_graph.json') }}", function (error, graph) {
+  d3.json("{{ url_for('static', filename=graph_json) }}", function (error, graph) {
     if (error) throw error;
 
     var link = svg.append("g")
@@ -117,3 +117,4 @@
   }
 
 </script>
+<h1>Variables: {{ cnf.num_vars }} Clauses: {{ cnf.num_clauses }}</h1>
