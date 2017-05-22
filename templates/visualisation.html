@@ -40,6 +40,11 @@
         opacity 1;
     }
 
+    div.graph {
+        border:1px solid black;
+        display: inline-block;
+    }
+
     .solver{
         height:40px;
         width:200px;
@@ -91,12 +96,27 @@
             <div class="tab-content">
                 <div class="tab-pane active" id="a_tab">
                     <acontent>
-                        <div><svg width="1500" height="1000" id="factor"></svg></div>
+
+                        <div class="graph">
+                            <h2 style="text-align:center;">pre-SatELite</h2>
+                            <svg width="750" height="1000" id="factor"></svg>
+                        </div>
+                        <div class="graph">
+                            <h2 style="text-align:center;">post-SatELite</h2>
+                            <svg width="750" height="1000" class="satelite" id="factor"></svg>
+                        </div>
                     </acontent>
                 </div>
                 <div class="tab-pane" id="b_tab">
                     <bcontent>
-                        <div><svg width="1500" height="1000" id="interaction"></svg></div>
+                        <div class="graph">
+                            <h2 style="text-align:center;">pre-SatELite</h2>
+                            <svg width="750" height="1000" id="interaction"></svg>
+                        </div>
+                         <div class="graph">
+                             <h2 style="text-align:center;">post-SatELite</h2>
+                             <svg width="750" height="1000" class="satelite" id="interaction"></svg>
+                         </div>
                     </bcontent>
                 </div>
             </div>
