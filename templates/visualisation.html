@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link href="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-combined.min.css" rel="stylesheet">
+    <style>
+
+    .links line{
+      stroke-opacity: 0.6;
+    }
+
+    .nodes circle {
+      stroke: #fff;
+
+    }
+
+    .positive {
+        stroke: #38925E;
+    }
+
+    .positivenode {
+        fill: #38925E;
+    }
+
+    .negativenode {
+        fill: #F72100;
+    }
+
+    .negative {
+        stroke: #F72100;
+        stroke-width: 1.5px;
+    }
+
+    .neutral {
+        stroke: #999;
+    }
+
+    .focus {
+        opacity 1;
+    }
+
+    .solver{
+        height:40px;
+        width:200px;
+    }
+
+    .result h1 {
+        text-align: center;
+    }
+
+    </style>
+
+    <script src="https://d3js.org/d3.v4.min.js"></script>
+
+    <script type="text/javascript" src="http://code.jquery.com/jquery-latest.js"></script>
+    <script src="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+
+
+</head>
+<body>
+
+    <div>
+        <div>
+            <form method=post enctype=multipart/form-data>
+                <p><input type=file name=file>
+                    <input type=submit value=Upload>
+            </form>
+        </div>
+
+        <form name="load">
+            <select name="file">
+                {% for x in file_list %}
+                    <option value="{{ x }}">{{ x }}</option>
+                {% endfor %}
+            </select>
+            <button type="submit">Load Data</button>
+        </form>
+
+        <button type="button" class="solver" onclick="solve()">SAT Solve</button>
+
+        <div><h1 class="result">Result: </h1></div>
+
+    </div>
+
+    <div class="tabbable">
+            <ul class="nav nav-tabs">
+                <li class="active"><a class="atab" href="#a_tab" data-toggle="tab">Factor</a></li>
+                <li><a class="btab" href="#b_tab" data-toggle="tab">Interaction</a></li>
+            </ul>
+            <div class="tab-content">
+                <div class="tab-pane active" id="a_tab">
+                    <acontent>
+                        <div><svg width="1500" height="1000" id="factor"></svg></div>
+                    </acontent>
+                </div>
+                <div class="tab-pane" id="b_tab">
+                    <bcontent>
+                        <div><svg width="1500" height="1000" id="interaction"></svg></div>
+                    </bcontent>
+                </div>
+            </div>
+        </div>
+
+    <script>
+            selected = '{{selected}}'
+            console.log(selected);
+            $.ajaxSetup ({
+                // Disable caching of AJAX responses
+                // Used when debugging
+                cache: true
+            });
+            var initFactor = false, initInteraction = false;
+
+            $.getScript("{{ url_for('static', filename='scripts/factor.js')}}");
+            $(".atab").click(function() {
+                $.getScript("{{ url_for('static', filename='scripts/factor.js')}}");
+            })
+
+            $(".btab").click(function() {
+                $.getScript("{{ url_for('static', filename='scripts/interaction.js')}}");
+            })
+    </script>
+    <script>
+
+        function solve() {
+            d3.json("/sat/solve/" + selected, function(error, solution) {
+                console.log(solution);
+                if(solution !== "UNSAT"){
+
+                    d3.select(".result").html( "Result: SAT" );
+                    solution.forEach(function(x){  console.log("#" + x.id); console.log(d3.select("#" + x.id).attr("class", x.value + "node") ) });
+                } else {
+                 d3.select(".result").html( "Result: UNSAT" );
+                 }
+            });
+        }
+    </script>
+
+</html>
