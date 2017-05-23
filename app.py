@@ -52,7 +52,7 @@ def interactions():
 
 @app.route("/interaction/satelited")
 def interactions_satelited():
-    problem.satelite_it(dimacs_file_path)
+    problem.satelite_it(dimacs_file_path[2])
     cnf_satelited = problem.Problem('bin/pre-satelited.cnf')
     problem.generate_interaction_graph(cnf_satelited)
     return render_template('interaction.html',
@@ -116,10 +116,12 @@ def graph(file):
 def graph_interaction(file):
     return json.dumps(problem.generate_interaction_graph(problem.Problem("static/data/" + file)))
 
+
+
 @app.route("/solvers")
 def solvers():
     print(urllib2.urlopen("http://baldur.iti.kit.edu/sat-competition-2016/solvers/main/").read())
-    print(graph())
+    # print(graph())
     return '''
         <!doctype html>
         <title>Solvers</title>

@@ -141,13 +141,12 @@
                 $.getScript("{{ url_for('static', filename='scripts/interaction.js')}}");
             })
     </script>
-    <script>
 
+    <script>
         function solve() {
             d3.json("/sat/solve/" + selected, function(error, solution) {
                 console.log(solution);
                 if(solution !== "UNSAT"){
-
                     d3.select(".result").html( "Result: SAT" );
                     solution.forEach(function(x){  console.log("#" + x.id); console.log(d3.select("#" + x.id).attr("class", x.value + "node") ) });
                 } else {

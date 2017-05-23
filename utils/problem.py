@@ -68,6 +68,7 @@ def generate_interaction_graph(problem):
     return interaction_graph
 
 def satelite_it(dimacs_file_path):
+    print("DIMACS: " + dimacs_file_path)
     satelite_path = ''
 
     if _platform == "linux" or _platform == "linux2":
@@ -76,12 +77,16 @@ def satelite_it(dimacs_file_path):
     elif _platform == "darwin":
         satelite_path = 'bin/SatELite_v1.0_macOS'
 
-    print(satelite_path + 'is exist: ' + str(os.path.isfile(satelite_path)))
-    print('../' + dimacs_file_path + 'is exist: ' + str(os.path.isfile( dimacs_file_path)))
+    # print(satelite_path + 'is exist: ' + str(os.path.isfile(satelite_path)))
+    # print('../' + dimacs_file_path + 'is exist: ' + str(os.path.isfile( dimacs_file_path)))
 
     flags = '+pre'
     call([satelite_path, dimacs_file_path, flags])
-    call(['mv', 'pre-satelited.cnf', 'bin'])
+    call(['mv', 'pre-satelited.cnf', 'bin/'])
+
+    satelited_cnf = read('bin/pre-satelited.cnf')
+
+    return satelited_cnf["clause"]
 
 
 # author: knerushkin@gmail.com
@@ -98,9 +103,9 @@ def sign(x):
 
 def link(clause, count):
     result = []
-    print(clause)
+    # print(clause)
     for literal in clause:
-        print(literal)
+        # print(literal)
         result.append({"source": "L{l}".format(l=abs(literal)), "target": "C{c}".format(c=count), "value": 1,
                        "direction": sign(literal)})
 
