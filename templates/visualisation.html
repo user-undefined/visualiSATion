@@ -103,7 +103,7 @@
                         </div>
                         <div class="graph">
                             <h2 style="text-align:center;">post-SatELite</h2>
-                            <svg width="750" height="1000" class="satelite" id="factor"></svg>
+                            <svg width="750" height="1000" id="factor_satelited"></svg>
                         </div>
                     </acontent>
                 </div>
@@ -115,7 +115,7 @@
                         </div>
                          <div class="graph">
                              <h2 style="text-align:center;">post-SatELite</h2>
-                             <svg width="750" height="1000" class="satelite" id="interaction"></svg>
+                             <svg width="750" height="1000" id="interaction_satelited"></svg>
                          </div>
                     </bcontent>
                 </div>
@@ -133,12 +133,16 @@
             var initFactor = false, initInteraction = false;
 
             $.getScript("{{ url_for('static', filename='scripts/factor.js')}}");
+            $.getScript("{{ url_for('static', filename='scripts/factor_satelited.js')}}");
+            
             $(".atab").click(function() {
                 $.getScript("{{ url_for('static', filename='scripts/factor.js')}}");
+                $.getScript("{{ url_for('static', filename='scripts/factor_satelited.js')}}");
             })
 
             $(".btab").click(function() {
                 $.getScript("{{ url_for('static', filename='scripts/interaction.js')}}");
+                $.getScript("{{ url_for('static', filename='scripts/interaction_satelited.js')}}");
             })
     </script>
 

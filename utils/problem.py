@@ -62,8 +62,8 @@ def generate_interaction_graph(problem):
     else:
         graph_file_path = 'static/interaction_graph.json'
     #
-    # with open(graph_file_path, 'w') as outfile:
-    #     json.dump(interaction_graph, outfile)
+    with open(graph_file_path, 'w') as outfile:
+         json.dump(interaction_graph, outfile)
     print(json.dumps(interaction_graph))
     return interaction_graph
 
@@ -83,6 +83,10 @@ def satelite_it(dimacs_file_path):
     flags = '+pre'
     call([satelite_path, dimacs_file_path, flags])
     call(['mv', 'pre-satelited.cnf', 'bin/'])
+    print("SATELITED -----------------------------")
+    print("SATELITED -----------------------------")
+    print("SATELITED -----------------------------")
+    print("SATELITED -----------------------------")
     return 'bin/pre-satelited.cnf'
 
 
