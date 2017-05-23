@@ -13,7 +13,11 @@ $("#interaction_satelited").empty();
   var simulation = d3.forceSimulation()
     .force("link", d3.forceLink().id(function (d) { return d.id; }))
     .force("charge", d3.forceManyBody())
-    .force("center", d3.forceCenter(width / 2, height / 2));
+    .force("center", d3.forceCenter(width / 2, height / 2))
+    .force('edge-left', edgeForce('x', 0, 1000))
+    .force('edge-right', edgeForce('x', width, 1000))
+    .force('edge-top', edgeForce('y', 0, 1000))
+    .force('edge-bottom', edgeForce('y', height, 1000));
 
   d3.json("/visual/repr/interaction/satelited/" + selected, function (error, graph) {
     if (error) throw error;
@@ -109,5 +113,27 @@ $("#interaction_satelited").empty();
     d.fx = null;
     d.fy = null;
   }
+
+  function edgeForce(axis, origin, strength) {
+      var nodes;
+
+      function force(alpha) {
+        nodes.forEach(function(node) {
+          Math.max(Math.abs(origin - node[axis]), node.r)
+
+
+          var delta = strength / (origin - node[axis]) * alpha;
+          var repulsion = node.r * strength / 10000
+
+          node[axis] -= delta;
+        })
+      }
+
+      force.initialize = function(_) {
+        nodes = _;
+      }
+
+      return force;
+    }
 
 })(d3);
