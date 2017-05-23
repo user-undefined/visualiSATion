@@ -108,14 +108,14 @@ def solve(file):
 
 
 
-@app.route("/visual/repr/factor/<file>")
-def graph(file):
+@app.route("/visual/repr/factor/satelited/<file>")
+def graph_satelited(file):
     return json.dumps(problem.transform(problem.satelite_it("static/data/" + file)))
 
 
 @app.route("/visual/repr/factor/<file>")
 def graph(file):
-    return json.dumps(problem.transform(problem.satelite_it("static/data/" + file)))
+    return json.dumps(problem.transform(problem.read("static/data/" + file)))
 
 
 @app.route("/visual/repr/interaction/<file>")
@@ -123,9 +123,8 @@ def graph_interaction(file):
     return json.dumps(problem.generate_interaction_graph(problem.Problem("static/data/" + file)))
 
 
-
 @app.route("/visual/repr/interaction/satelited/<file>")
-def graph_interaction(file):
+def graph_interaction_satelited(file):
     return json.dumps(problem.generate_interaction_graph(problem.satelite_it("static/data/" + file)))
 
 
@@ -139,12 +138,6 @@ def solvers():
         <title>Solvers</title>
         <h1>Solvers</h1>
         '''
-
-@app.route("/visual/repr/satelited")
-def graph_satelited():
-    problem.satelite_it(dimacs_file_path)
-    cnf_satelited = problem.Problem('bin/pre-satelited.cnf')
-    return json.dumps(problem.transform(problem.read("bin/dubois20.cnf")))
 
 
 if __name__ == "__main__":
