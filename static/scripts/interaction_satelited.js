@@ -21,9 +21,6 @@ $("#interaction_satelited").empty();
 
   d3.json("/visual/repr/interaction/satelited/" + selected, function (error, graph) {
     if (error) throw error;
-    console.log("------------")
-    console.log("INTER SAT WIELKOSC V: " + graph.num_vars + ' C: ' + graph.num_clauses)
-
     d3.select(".problem_size.interaction.satelited").html("Variables: " + graph.num_vars + ", Clauses: " + graph.num_clauses)
 
     var link = svg.append("g")

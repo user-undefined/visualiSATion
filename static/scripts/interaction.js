@@ -21,8 +21,6 @@ $("#interaction").empty();
 
   d3.json("/visual/repr/interaction/" + selected, function (error, graph) {
     if (error) throw error;
-    console.log("------------")
-    console.log("INTER WIELKOSC V: " + graph.num_vars + ' C: ' + graph.num_clauses)
     d3.select(".problem_size.interaction.non-satelited").html("Variables: " + graph.num_vars + ", Clauses: " + graph.num_clauses)
 
     var link = svg.append("g")

@@ -1,13 +1,10 @@
 !(function (d3) {
 
 $("#factor_satelited").empty();
-console.log(selected)
-
 
 var svg = d3.select("#factor_satelited"),
     width = +svg.attr("width"),
     height = +svg.attr("height");
-console.log(svg)
 var color = d3.scaleOrdinal(d3.schemeCategory20);
 
 function edgeForce(axis, origin, strength) {
@@ -16,7 +13,6 @@ function edgeForce(axis, origin, strength) {
       function force(alpha) {
         nodes.forEach(function(node) {
           Math.max(Math.abs(origin - node[axis]), node.r)
-
 
           var delta = strength / (origin - node[axis]) * alpha;
           var repulsion = node.r * strength / 10000
@@ -43,24 +39,20 @@ var simulation = d3.forceSimulation()
 
 
 function drawGraph(graph) {
-  console.log(graph)
-  console.log(graph.links)
 
   var link = svg.append("g")
       .attr("class", "links")
-    .selectAll("line")
-    .data(graph.links)
-    .enter().append("line")
+      .selectAll("line")
+      .data(graph.links)
+      .enter().append("line")
       .attr("stroke-width", function(d) { return Math.sqrt(d.value); })
       .attr("class", function(d) { return d.direction});
 
-  console.log(link)
-
   var node = svg.append("g")
       .attr("class", "nodes")
-    .selectAll("circle")
-    .data(graph.nodes)
-    .enter().append("circle")
+      .selectAll("circle")
+      .data(graph.nodes)
+      .enter().append("circle")
       .attr("r", 6)
       .attr("fill", function(d) { return color(d.group); })
       .attr("class", "node")
@@ -72,17 +64,13 @@ function drawGraph(graph) {
       .on("mouseover", fade(.1))
       .on("mouseout", fade(.6));
 
-  console.log(graph.nodes)
-  console.log(node)
-
   var label = svg.append("g")
-  .attr("class", "labels")
-  .selectAll("text")
-  .data(graph.nodes)
-  .enter().append("text")
-    .attr("class", "label")
-    .text(function(d) { return d.id; });
-
+      .attr("class", "labels")
+      .selectAll("text")
+      .data(graph.nodes)
+      .enter().append("text")
+      .attr("class", "label")
+      .text(function(d) { return d.id; });
 
   simulation
       .nodes(graph.nodes)
@@ -92,14 +80,14 @@ function drawGraph(graph) {
       .links(graph.links);
 
   var linkedByIndex = {};
-graph.links
-  .forEach(function (d) {
-    linkedByIndex[d.source.index + "," + d.target.index] = 1;
-  });
-function isConnected(a, b) {
-  return linkedByIndex[a.index + "," + b.index] || linkedByIndex[b.index + "," + a.index] || a.index == b.index;
-}
+  graph.links
+      .forEach(function (d) {
+        linkedByIndex[d.source.index + "," + d.target.index] = 1;
+      });
 
+  function isConnected(a, b) {
+    return linkedByIndex[a.index + "," + b.index] || linkedByIndex[b.index + "," + a.index] || a.index == b.index;
+  }
 
   function ticked() {
     link
@@ -138,11 +126,8 @@ data = [];
 d3.json("/visual/repr/factor/satelited/" + selected, function(error, graph) {
     if (error) throw error;
     data = graph;
-    console.log("------------")
-    console.log("FACTOR SAT WIELKOSC V: " + graph.num_vars + ' C: ' + graph.num_clauses)
     d3.select(".problem_size.factor.satelited").html("Variables: " + graph.num_vars + ", Clauses: " + graph.num_clauses)
     drawGraph(graph);
-
 });
 
 function dragstarted(d) {

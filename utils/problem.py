@@ -92,9 +92,7 @@ def sign(x):
 
 def link(clause, count):
     result = []
-    # print(clause)
     for literal in clause:
-        # print(literal)
         result.append({"source": "L{l}".format(l=abs(literal)), "target": "C{c}".format(c=count), "value": 1,
                        "direction": sign(literal)})
 
@@ -138,4 +136,3 @@ def prepare_graph_data(file, graph_type, satelite):
 
 if __name__ == "__main__":
     data = read("../bin/dubois20.cnf")
-    print(data)
