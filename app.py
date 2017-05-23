@@ -52,8 +52,8 @@ def interactions():
 
 @app.route("/interaction/satelited")
 def interactions_satelited():
-    problem.satelite_it(dimacs_file_path[2])
-    cnf_satelited = problem.Problem('bin/pre-satelited.cnf')
+    cnf_satelited_file_path = problem.satelite_it(dimacs_file_path[2])
+    cnf_satelited = problem.Problem(cnf_satelited_file_path)
     problem.generate_interaction_graph(cnf_satelited)
     return render_template('interaction.html',
                             cnf=cnf_satelited,
@@ -110,7 +110,7 @@ def solve(file):
 
 @app.route("/visual/repr/factor/satelited/<file>")
 def graph_satelited(file):
-    return json.dumps(problem.transform(problem.satelite_it("static/data/" + file)))
+    return json.dumps(problem.transform(problem.read(problem.satelite_it("static/data/" + file))))
 
 
 @app.route("/visual/repr/factor/<file>")
@@ -125,7 +125,7 @@ def graph_interaction(file):
 
 @app.route("/visual/repr/interaction/satelited/<file>")
 def graph_interaction_satelited(file):
-    return json.dumps(problem.generate_interaction_graph(problem.satelite_it("static/data/" + file)))
+    return json.dumps(problem.generate_interaction_graph(problem.Problem(problem.satelite_it("static/data/" + file))))
 
 
 

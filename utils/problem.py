@@ -83,10 +83,7 @@ def satelite_it(dimacs_file_path):
     flags = '+pre'
     call([satelite_path, dimacs_file_path, flags])
     call(['mv', 'pre-satelited.cnf', 'bin/'])
-
-    satelited_cnf = read('bin/pre-satelited.cnf')
-
-    return satelited_cnf["clause"]
+    return 'bin/pre-satelited.cnf'
 
 
 # author: knerushkin@gmail.com
