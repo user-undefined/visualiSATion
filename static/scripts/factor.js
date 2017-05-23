@@ -138,6 +138,9 @@ data = [];
 d3.json("/visual/repr/factor/" + selected, function(error, graph) {
     if (error) throw error;
     data = graph;
+    console.log("------------")
+    console.log("FACTOR WIELKOSC V: " + graph.num_vars + ' C: ' + graph.num_clauses)
+    d3.select(".problem_size.factor.non-satelited").html("Variables: " + graph.num_vars + ", Clauses: " + graph.num_clauses)
     drawGraph(graph);
 
 });

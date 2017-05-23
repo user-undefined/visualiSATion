@@ -21,7 +21,7 @@ class Problem(object):
 def read(filename):
     cnf_problem = dimacs.read(filename)
     return cnf_problem.__dict__
-
+ 
 
 def generate_interaction_graph(problem):
     clauses_only_positive_literals = []
@@ -54,21 +54,14 @@ def generate_interaction_graph(problem):
         node = dict(id=str(v), group=1)
         interaction_graph["nodes"].append(node)
         links = [dict(source=str(v), target=str(item), weight=1) for item in i]
-        print(links)
         interaction_graph["links"].extend(links)
 
-    if problem.satelited:
-        graph_file_path = 'static/interaction_graph_satelited.json'
-    else:
-        graph_file_path = 'static/interaction_graph.json'
-    #
-    with open(graph_file_path, 'w') as outfile:
-         json.dump(interaction_graph, outfile)
-    print(json.dumps(interaction_graph))
+    interaction_graph["num_vars"] = problem.num_vars
+    interaction_graph["num_clauses"] = problem.num_clauses
+
     return interaction_graph
 
 def satelite_it(dimacs_file_path):
-    print("DIMACS: " + dimacs_file_path)
     satelite_path = ''
 
     if _platform == "linux" or _platform == "linux2":
@@ -77,16 +70,9 @@ def satelite_it(dimacs_file_path):
     elif _platform == "darwin":
         satelite_path = 'bin/SatELite_v1.0_macOS'
 
-    # print(satelite_path + 'is exist: ' + str(os.path.isfile(satelite_path)))
-    # print('../' + dimacs_file_path + 'is exist: ' + str(os.path.isfile( dimacs_file_path)))
-
     flags = '+pre'
     call([satelite_path, dimacs_file_path, flags])
     call(['mv', 'pre-satelited.cnf', 'bin/'])
-    print("SATELITED -----------------------------")
-    print("SATELITED -----------------------------")
-    print("SATELITED -----------------------------")
-    print("SATELITED -----------------------------")
     return 'bin/pre-satelited.cnf'
 
 
@@ -95,6 +81,8 @@ def transform(data):
     result = {}
     result.update({"nodes": nodes(data["clauses"], data["num_clauses"], data["num_vars"])})
     result.update({"links": links(data["clauses"])})
+    result.update({"num_vars": data["num_vars"]})
+    result.update({"num_clauses": data["num_clauses"]})
     return result
 
 
@@ -131,6 +119,22 @@ def nodes(clauses, num_clauses, num_literals):
                        "group":  "literal"})
     return result
 
+def prepare_graph_data(file, graph_type, satelite):
+    if satelite:
+        cnf_file_path = satelite_it(''.join(["static/data/", file]))
+    else:
+        cnf_file_path = ''.join(["static/data/", file])
+
+    if graph_type == "factor":
+        cnf = read(cnf_file_path)
+        graph_data = transform(cnf)
+    elif graph_type == "interaction":
+        cnf = Problem(cnf_file_path)
+        graph_data = generate_interaction_graph(cnf)
+
+    
+    return graph_data
+    
 
 if __name__ == "__main__":
     data = read("../bin/dubois20.cnf")

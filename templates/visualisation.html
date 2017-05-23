@@ -99,10 +99,12 @@
 
                         <div class="graph">
                             <h2 style="text-align:center;">pre-SatELite</h2>
+                            <h3 style="text-align:center;" class="problem_size factor non-satelited">...</h3>
                             <svg width="750" height="1000" id="factor"></svg>
                         </div>
                         <div class="graph">
                             <h2 style="text-align:center;">post-SatELite</h2>
+                            <h3 style="text-align:center;" class="problem_size factor satelited">...</h3>
                             <svg width="750" height="1000" id="factor_satelited"></svg>
                         </div>
                     </acontent>
@@ -111,10 +113,12 @@
                     <bcontent>
                         <div class="graph">
                             <h2 style="text-align:center;">pre-SatELite</h2>
+                            <h3 style="text-align:center;" class="problem_size interaction non-satelited">...</h3>
                             <svg width="750" height="1000" id="interaction"></svg>
                         </div>
                          <div class="graph">
                              <h2 style="text-align:center;">post-SatELite</h2>
+                             <h3 style="text-align:center;" class="problem_size interaction satelited">...</h3>
                              <svg width="750" height="1000" id="interaction_satelited"></svg>
                          </div>
                     </bcontent>
@@ -128,7 +132,7 @@
             $.ajaxSetup ({
                 // Disable caching of AJAX responses
                 // Used when debugging
-                cache: true
+                cache: false
             });
             var initFactor = false, initInteraction = false;
 

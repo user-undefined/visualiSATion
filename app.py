@@ -35,31 +35,6 @@ def load():
     </form>
     '''
 
-
-
-
-
-@app.route("/interaction")
-def interactions():
-    print(dimacs_file_path[0])
-    cnf = problem.Problem(dimacs_file_path[0])
-    problem.generate_interaction_graph(cnf)
-    return render_template('interaction.html',
-                            cnf=cnf,
-                            graph_json='interaction_graph.json')
-
-
-
-@app.route("/interaction/satelited")
-def interactions_satelited():
-    cnf_satelited_file_path = problem.satelite_it(dimacs_file_path[0])
-    cnf_satelited = problem.Problem(cnf_satelited_file_path)
-    problem.generate_interaction_graph(cnf_satelited)
-    return render_template('interaction.html',
-                            cnf=cnf_satelited,
-                            graph_json='interaction_graph_satelited.json')
-
-
 @app.route("/sat/data/satelited")
 def data_satelited():
     problem.satelite_it(dimacs_file_path)
@@ -73,7 +48,6 @@ def allowed_file(filename):
 def list_data(path):
     l = []
     for folder, subfolder, file in os.walk(path):
-        print(file)
         l.extend(file)
 
     return l
@@ -107,55 +81,29 @@ def solve(file):
     return json.dumps(result)
 
 
+@app.route("/visual/repr/factor/<file>")
+def graph(file):
+    graph_data = problem.prepare_graph_data(file, graph_type="factor", satelite=False)
+    return json.dumps(graph_data)
+
 
 @app.route("/visual/repr/factor/satelited/<file>")
 def graph_satelited(file):
-    print(file)
-    print("/visual/repr/factor/satelited/<file>")
-    cnf = problem.satelite_it("static/data/" + file)
-    print(cnf)
-    return json.dumps(problem.transform(problem.read(cnf)))
-
-
-@app.route("/visual/repr/factor/<file>")
-def graph(file):
-    return json.dumps(problem.transform(problem.read("static/data/" + file)))
+    graph_data = problem.prepare_graph_data(file, graph_type="factor", satelite=True)
+    return json.dumps(graph_data)
 
 
 @app.route("/visual/repr/interaction/<file>")
 def graph_interaction(file):
-    print(file)
-    print("/visual/repr/interaction/<file>")
-    return json.dumps(problem.generate_interaction_graph(problem.Problem("static/data/" + file)))
+    graph_data = problem.prepare_graph_data(file, graph_type="interaction", satelite=False)
+    return json.dumps(graph_data)
 
 
 @app.route("/visual/repr/interaction/satelited/<file>")
 def graph_interaction_satelited(file):
-    cnf = problem.satelite_it("static/data/" + file)
-    print(cnf)
-    return json.dumps(problem.generate_interaction_graph(problem.Problem(cnf)))
-
-
-
-@app.route("/solvers")
-def solvers():
-    print(urllib2.urlopen("http://baldur.iti.kit.edu/sat-competition-2016/solvers/main/").read())
-    # print(graph())
-    return '''
-        <!doctype html>
-        <title>Solvers</title>
-        <h1>Solvers</h1>
-        '''
+    graph_data = problem.prepare_graph_data(file, graph_type="interaction", satelite=True)
+    return json.dumps(graph_data)
 
 
 if __name__ == "__main__":
-    dimacs_file_path = ["bin/dubois20.cnf", "bin/aim-100-1_6-no-1.cnf", "bin/par8-1-c.cnf"]
-    print(problem.read(dimacs_file_path[1])["clauses"])
-    cnf = [[1, -3], [2, 3, -1]]
-    print(pycosat.solve(problem.read(dimacs_file_path[1])["clauses"]))
-
-    print(pycosat.solve(problem.read(dimacs_file_path[2])["clauses"]))
-    print(pycosat.solve(problem.read(dimacs_file_path[0])["clauses"]))
-    print(pycosat.solve(cnf))
     app.run()
-

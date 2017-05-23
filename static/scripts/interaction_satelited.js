@@ -17,7 +17,10 @@ $("#interaction_satelited").empty();
 
   d3.json("/visual/repr/interaction/satelited/" + selected, function (error, graph) {
     if (error) throw error;
-    console.log(graph)
+    console.log("------------")
+    console.log("INTER SAT WIELKOSC V: " + graph.num_vars + ' C: ' + graph.num_clauses)
+
+    d3.select(".problem_size.interaction.satelited").html("Variables: " + graph.num_vars + ", Clauses: " + graph.num_clauses)
 
     var link = svg.append("g")
       .attr("class", "links")
@@ -68,8 +71,8 @@ $("#interaction_satelited").empty();
         .attr("y2", function (d) { return d.target.y; });
 
       node
-        .attr("cx", function(d) { return d.x = Math.max(radius, Math.min(width - radius, d.x)); })
-        .attr("cy", function(d) { return d.y = Math.max(radius, Math.min(height - radius, d.y)); });
+        .attr("cx", function(d) { return d.x; })
+        .attr("cy", function(d) { return d.y; });
     }
 
     function fade(opacity) {

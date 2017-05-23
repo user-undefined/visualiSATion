@@ -138,6 +138,9 @@ data = [];
 d3.json("/visual/repr/factor/satelited/" + selected, function(error, graph) {
     if (error) throw error;
     data = graph;
+    console.log("------------")
+    console.log("FACTOR SAT WIELKOSC V: " + graph.num_vars + ' C: ' + graph.num_clauses)
+    d3.select(".problem_size.factor.satelited").html("Variables: " + graph.num_vars + ", Clauses: " + graph.num_clauses)
     drawGraph(graph);
 
 });
