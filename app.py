@@ -110,11 +110,23 @@ def solve(file):
 
 @app.route("/visual/repr/factor/<file>")
 def graph(file):
-    return json.dumps(problem.transform(problem.read("static/data/" + file)))
+    return json.dumps(problem.transform(problem.satelite_it("static/data/" + file)))
+
+
+@app.route("/visual/repr/factor/<file>")
+def graph(file):
+    return json.dumps(problem.transform(problem.satelite_it("static/data/" + file)))
+
 
 @app.route("/visual/repr/interaction/<file>")
 def graph_interaction(file):
     return json.dumps(problem.generate_interaction_graph(problem.Problem("static/data/" + file)))
+
+
+
+@app.route("/visual/repr/interaction/satelited/<file>")
+def graph_interaction(file):
+    return json.dumps(problem.generate_interaction_graph(problem.satelite_it("static/data/" + file)))
 
 
 
