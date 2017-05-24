@@ -19,6 +19,7 @@ APP_ROOT_FOLDER = os.path.dirname(__file__)
 TEMPLATE_FOLDER = os.path.join(APP_ROOT_FOLDER, 'templates')
 STATIC_FOLDER = os.path.join(APP_ROOT_FOLDER, 'static')
 UPLOAD_FOLDER = os.path.join(STATIC_FOLDER, 'data')
+BIN_FOLDER = os.path.join(APP_ROOT_FOLDER, 'bin')
 ALLOWED_EXTENSIONS = set(['cnf'])
 
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
@@ -57,7 +58,7 @@ def list_data(path):
 
 @app.route("/visualisation", methods=['GET', 'POST'])
 def show():
-    call(['rm', '-f', 'bin/pre-satelited.cnf'])
+    call(['rm', '-f', os.path.join(BIN_FOLDER, 'pre-satelited.cnf')])
     selected = request.args.get('file')
     file_list = list_data(UPLOAD_FOLDER)
     if request.method == 'POST':
@@ -66,6 +67,11 @@ def show():
             filename = file.filename
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
             return redirect(url_for('show'))
+
+    # Put selected file on first place in file_list
+    if 'cnf' in selected:
+        f, s = 0, file_list.index(selected)
+        file_list[s], file_list[f] = file_list[f], file_list[s]
 
     return render_template("visualisation.html", file_list=file_list, selected=selected)
 
