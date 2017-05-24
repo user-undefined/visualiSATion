@@ -16,7 +16,7 @@ UPLOAD_FOLDER = os.path.join(STATIC_FOLDER, 'data')
 def read(filename):
     cnf_problem = dimacs.read(filename)
     return cnf_problem.__dict__
- 
+
 
 def generate_interaction_graph(data):
     clauses_only_positive_literals = []
@@ -30,7 +30,7 @@ def generate_interaction_graph(data):
         vars_associated_flat = list(set(vars_associated_dirty))
         vars_associated = [v for v in vars_associated_flat if v not in range(variable + 1)]
         relations[variable] = vars_associated
-    if relations: 
+    if relations:
         relations[data["num_vars"]] = []
 
     interaction_graph = dict(nodes=[], links=[])
@@ -47,11 +47,8 @@ def generate_interaction_graph(data):
 
 def satelite_it(dimacs_file_path):
     satelite_path = os.path.join(BIN_FOLDER, 'SatELite_v1.0_linux')
-    flags = '+pre'
-    call([satelite_path, dimacs_file_path, flags])
-    satelited_file_path = os.path.join(APP_ROOT_FOLDER, 'pre-satelited.cnf')
-    call(['mv', satelited_file_path, BIN_FOLDER])
     satelited_file_path = os.path.join(BIN_FOLDER, 'pre-satelited.cnf')
+    call([satelite_path, dimacs_file_path, satelited_file_path])
     return satelited_file_path
 
 
