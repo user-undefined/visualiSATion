@@ -78,7 +78,9 @@ def show():
 
 @app.route("/sat/solve/<file>")
 def solve(file):
-    solution = pycosat.solve(problem.read('static/data/' + file)["clauses"])
+    file_path = os.path.join(UPLOAD_FOLDER, file)
+    clauses = problem.read(file_path)["clauses"]
+    solution = pycosat.solve(clauses)
     result = []
     if solution != "UNSAT":
         for value in solution:
