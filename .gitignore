@@ -97,3 +97,6 @@ ENV/
 
 # mypy
 .mypy_cache/
+
+bin/pre-satelited.cnf
+.idea/

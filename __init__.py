@@ -26,7 +26,7 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 @app.route("/")
 def hello():
-    return "Hello, I love Digital Ocean!"
+    return "Hello, I love SAT solving!"
 
 
 @app.route("/load", methods=['GET', 'POST'])
@@ -60,11 +60,6 @@ def show():
     call(['rm', '-f', 'bin/pre-satelited.cnf'])
     selected = request.args.get('file')
     file_list = list_data(UPLOAD_FOLDER)
-    print('--------------')
-    print(UPLOAD_FOLDER)
-    print('--------------')
-    print(file_list)
-    print('--------------')
     if request.method == 'POST':
         file = request.files['file']
         if file and allowed_file(file.filename):
