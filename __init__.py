@@ -67,6 +67,9 @@ def show():
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
             return redirect(url_for('show'))
 
+    # Put selected file on first place in file_list 
+    f, s = 0, file_list.index(selected)
+    file_list[s], file_list[f] = file_list[f], file_list[s]
     return render_template("visualisation.html", file_list=file_list, selected=selected)
 
 
