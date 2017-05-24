@@ -69,7 +69,7 @@ def show():
             return redirect(url_for('show'))
 
     # Put selected file on first place in file_list
-    if 'cnf' in selected:
+    if selected:
         f, s = 0, file_list.index(selected)
         file_list[s], file_list[f] = file_list[f], file_list[s]
 
