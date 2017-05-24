@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 from mxklabs import dimacs
 import json
 from sys import platform as _platform
@@ -33,21 +35,10 @@ def generate_interaction_graph(problem):
     for variable in range(1, problem.num_vars):
         vars_associated_dirty = [v for c in clauses_only_positive_literals if variable in c for v in c]
         vars_associated_flat = list(set(vars_associated_dirty))
-        # delete the variable itself from the set
         vars_associated = [v for v in vars_associated_flat if v not in range(variable + 1)]
         relations[variable] = vars_associated
     relations[problem.num_vars] = []
     problem.interaction_variables = relations
-
-    cardinality = {}
-    for variable, items in problem.interaction_variables.iteritems():
-        cardinality[variable] = len(items)
-        counter = 0
-        for v, i in problem.interaction_variables.iteritems():
-            if v != variable and variable in i:
-                counter += 1
-        cardinality[variable] += counter
-    problem.interaction_variables_cardinality = cardinality
 
     interaction_graph = dict(nodes=[], links=[])
     for v, i in problem.interaction_variables.iteritems():

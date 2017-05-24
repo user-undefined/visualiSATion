@@ -93,7 +93,7 @@
 
     .button {
         border-radius: 4px;
-        background-color:  #0040ff;
+        background-color:  #0074D9;
         border: none;
         color: #FFFFFF;
         text-align: center;
@@ -103,6 +103,24 @@
         cursor: pointer;
         margin: auto;
         width: 40%;
+    }
+
+    .choice {
+        border-radius: 4px;
+        background-color:  #0074D9;
+        border: none;
+        color: #FFFFFF;
+        text-align: center;
+        font-size: 18px;
+        padding: 20px 0px 20px 0px;
+        transition: all 0.5s;
+        cursor: pointer;
+    }
+
+    input[type="file"] {
+        width: 40%;
+        height: 24px;
+        line-height: 0px;
     }
 
     .button span {
@@ -132,7 +150,7 @@
 
     .file select {
         border: 0 !important;
-        background: #0040ff url(img/demo/select-arrow.png) no-repeat 90% center;
+        background: #0074D9 url(img/demo/select-arrow.png) no-repeat 90% center;
         text-indent: 0.01px;
         font-size: 24px;
         height: 64px;
@@ -141,6 +159,29 @@
         color: #FFF;
         box-shadow: inset 0 0 5px rgba(000,000,000, 0.5);
     }
+
+    .nav-tabs {
+        border-bottom: 1px solid #0074D9;
+    }
+
+    .nav-tabs>.active>a, .nav-tabs>.active>a:hover {
+        border: 1px solid #0074D9;
+        border-bottom-color: #fff;
+    }
+
+    .nav-tabs>li>a:hover {
+        border-color: white white #0074D9 white;
+    }
+
+    .tab-name {
+        font-size: 24px;
+    }
+
+    .nav-tabs>li>a {
+        padding: 12px;
+    }
+    
+
     </style>
 
     <script src="https://d3js.org/d3.v4.min.js"></script>
@@ -152,10 +193,10 @@
 </head>
 <body>
 
-    <div style="margin-top: 10px;" class="Row settings">
+    <div style="margin-top: 10px; margin-bottom: 15px" class="Row settings">
         <div class="Column">
             <form style="margin-left: 10px" method=post enctype=multipart/form-data>
-                <input type=file name=file>
+                <input class="choice" type=file name=file>
                 <input class="button" type=submit value=Upload>
             </form>
         </div>
@@ -175,20 +216,19 @@
 
     <div class="tabbable">
             <ul class="nav nav-tabs">
-                <li class="active"><a class="atab" href="#a_tab" data-toggle="tab">Factor</a></li>
-                <li><a class="btab" href="#b_tab" data-toggle="tab">Interaction</a></li>
+                <li class="active"><a class="tab-name atab" href="#a_tab" data-toggle="tab">Factor</a></li>
+                <li><a class="tab-name btab" href="#b_tab" data-toggle="tab">Interaction</a></li>
             </ul>
             <div class="tab-content">
                 <div class="tab-pane active Row" id="a_tab">
                     <acontent>
-
                         <div style="float: left" class="graph">
-                            <h2 style="text-align:center;">Original</h2>
+                            <h2 style="text-align:center;">ORIGINAL</h2>
                             <h3 style="text-align:center;" class="problem_size factor non-satelited">...</h3>
                             <svg width="900" height="700" id="factor"></svg>
                         </div>
                         <div style="float: right" class="graph">
-                            <h2 style="text-align:center;">SatElited</h2>
+                            <h2 style="text-align:center;">SATELITED</h2>
                             <h3 style="text-align:center;" class="problem_size factor satelited">...</h3>
                             <svg width="900" height="700" id="factor_satelited"></svg>
                         </div>
@@ -197,12 +237,12 @@
                 <div class="tab-pane" id="b_tab">
                     <bcontent>
                         <div style="float: left" class="graph">
-                            <h2 style="text-align:center;">Original</h2>
+                            <h2 style="text-align:center;">ORIGINAL</h2>
                             <h3 style="text-align:center;" class="problem_size interaction non-satelited">...</h3>
                             <svg width="900" height="700" id="interaction"></svg>
                         </div>
                          <div style="float: right" class="graph">
-                             <h2 style="text-align:center;">SatElited</h2>
+                             <h2 style="text-align:center;">SATELITED</h2>
                              <h3 style="text-align:center;" class="problem_size interaction satelited">...</h3>
                              <svg width="900" height="700" id="interaction_satelited"></svg>
                          </div>

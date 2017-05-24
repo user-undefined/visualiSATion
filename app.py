@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 from __future__ import print_function
 
 import urllib2
@@ -18,9 +20,7 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 @app.route("/")
 def hello():
-    html = "<h3>Hello {name}!</h3>" \
-           "<b>Hostname:</b> {hostname}<br/>"
-    return html.format(name=os.getenv('NAME', "world"), hostname=socket.gethostname())
+    return redirect("http://127.0.0.1:5000/visualisation")
 
 
 @app.route("/load", methods=['GET', 'POST'])
@@ -55,6 +55,7 @@ def list_data(path):
 
 @app.route("/visualisation", methods=['GET', 'POST'])
 def show():
+    call(['rm', '-f', 'bin/pre-satelited.cnf'])
     selected = request.args.get('file')
     file_list = list_data('static/data')
     if request.method == 'POST':
