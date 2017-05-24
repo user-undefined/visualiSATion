@@ -9,5 +9,5 @@ setup(
     author='Kanstatsin Nerushkin, Marcin Kasprowocz',
     url="https://github.com/knerushkin/visualiSATion",
     packages=find_packages(exclude=['contrib', 'docs', 'tests']),
-    install_requires=['flask, mxklabs, pycosat'],
+    install_requires=['flask', 'mxklabs', 'pycosat'],
 )

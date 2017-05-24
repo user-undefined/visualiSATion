@@ -14,13 +14,19 @@ import pycosat
 from utils.problem import sign
 
 app = Flask(__name__)
-UPLOAD_FOLDER = 'static/data'
+
+APP_ROOT_FOLDER = os.path.dirname(__file__)
+TEMPLATE_FOLDER = os.path.join(APP_ROOT_FOLDER, 'templates')
+STATIC_FOLDER = os.path.join(APP_ROOT_FOLDER, 'static')
+UPLOAD_FOLDER = os.path.join(STATIC_FOLDER, 'data')
 ALLOWED_EXTENSIONS = set(['cnf'])
+
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+
 
 @app.route("/")
 def hello():
-    return redirect("http://127.0.0.1:5000/visualisation")
+    return "Hello, I love Digital Ocean!"
 
 
 @app.route("/load", methods=['GET', 'POST'])
@@ -35,10 +41,6 @@ def load():
     </form>
     '''
 
-@app.route("/sat/data/satelited")
-def data_satelited():
-    problem.satelite_it(dimacs_file_path)
-    return json.dumps(problem.read("bin/dubois20.cnf"))
 
 def allowed_file(filename):
     return '.' in filename and \
@@ -57,7 +59,12 @@ def list_data(path):
 def show():
     call(['rm', '-f', 'bin/pre-satelited.cnf'])
     selected = request.args.get('file')
-    file_list = list_data('static/data')
+    file_list = list_data(UPLOAD_FOLDER)
+    print('--------------')
+    print(UPLOAD_FOLDER)
+    print('--------------')
+    print(file_list)
+    print('--------------')
     if request.method == 'POST':
         file = request.files['file']
         if file and allowed_file(file.filename):
