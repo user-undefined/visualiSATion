@@ -20,6 +20,8 @@ $("#interaction_satelited").empty();
     .force('edge-bottom', edgeForce('y', height, 1000));
 
   d3.json("/visual/repr/interaction/satelited/" + selected, function (error, graph) {
+    d3.select(".problem_size.interaction.non-satelited").html("Variables: " + graph.num_vars + ", Clauses: " + graph.num_clauses)
+
     if (error) throw error;
     d3.select(".problem_size.interaction.satelited").html("Variables: " + graph.num_vars + ", Clauses: " + graph.num_clauses)
 

@@ -38,12 +38,15 @@ $("#interaction").empty();
       .enter().append("circle")
       .attr("r", 6)
       .attr("fill", function (d) { return color(d.group); })
+      .attr("id", function(d) { return d.id; })
       .call(d3.drag()
         .on("start", dragstarted)
         .on("drag", dragged)
         .on("end", dragended))
       .on("mouseover", fade(.1))
       .on("mouseout", fade(1));
+
+    console.log(node)
 
     node.append("title")
       .text(function (d) { return d.id; });

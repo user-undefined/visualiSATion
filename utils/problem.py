@@ -5,12 +5,13 @@ import json
 from sys import platform as _platform
 from subprocess import call
 import os.path
+from shutil import copyfile
 
 UTILS_FOLDER = os.path.dirname(__file__)
 APP_ROOT_FOLDER = os.path.abspath(__file__ + "/../../")
 STATIC_FOLDER = os.path.join(APP_ROOT_FOLDER, 'static')
-BIN_FOLDER = os.path.join(APP_ROOT_FOLDER, 'bin')
-UPLOAD_FOLDER = os.path.join(STATIC_FOLDER, 'data')
+BIN_FOLDER = os.path.join(STATIC_FOLDER, 'data/raw')
+UPLOAD_FOLDER = os.path.join(STATIC_FOLDER, 'data/raw')
 
 
 def read(filename):
@@ -35,20 +36,21 @@ def generate_interaction_graph(data):
 
     interaction_graph = dict(nodes=[], links=[])
     for v, i in relations.iteritems():
-        node = dict(id=str(v), group=1)
+        node = {"id": "L" + str(v) + "", "group": 1}
         interaction_graph["nodes"].append(node)
-        links = [dict(source=str(v), target=str(item), weight=1) for item in i]
+        links = [dict(source=("L" + str(v) + ""), target=("L" + str(item) + ""), weight=1) for item in i]
         interaction_graph["links"].extend(links)
 
     interaction_graph["num_vars"] = data["num_vars"]
     interaction_graph["num_clauses"] = data["num_clauses"]
-
     return interaction_graph
 
 def satelite_it(dimacs_file_path):
     satelite_path = os.path.join(BIN_FOLDER, 'SatELite_v1.0_linux')
-    satelited_file_path = os.path.join(BIN_FOLDER, 'pre-satelited.cnf')
+    SATELITED_FOLDER = os.path.join(STATIC_FOLDER, 'data/satelited/')
+    satelited_file_path = os.path.join(SATELITED_FOLDER, 'pre-satelited.cnf')
     call([satelite_path, dimacs_file_path, satelited_file_path])
+
     return satelited_file_path
 
 

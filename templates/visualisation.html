@@ -6,7 +6,7 @@
     <link href="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-combined.min.css" rel="stylesheet">
     <style>
 
-    * {
+    {
         margin: 0;
         padding: 0;
     }
@@ -23,13 +23,29 @@
         line-height: 100%;
     }
 
+    .record {
+        font-size: 14px;
+        stroke: #000;
+        stroke-width: 0.5px;
+        font-weight: normal;
+        line-height: 100%;
+    }
+
     .links line{
-      stroke-opacity: 0.6;
+      stroke-opacity: 1;
     }
 
     .nodes circle {
       stroke: #fff;
 
+    }
+
+    .clause {
+        fill: #368CBF
+    }
+
+    .literal {
+        fill: #333366
     }
 
     .positive {
@@ -45,8 +61,8 @@
     }
 
     .negative {
-        stroke: #F72100;
-        stroke-width: 1.5px;
+        stroke: #D43F3F;
+        <!--stroke-width: 1.5px;-->
     }
 
     .neutral {
@@ -130,7 +146,7 @@
         transition: 0.5s;
     }
 
-    .button span:after {
+    .button span.right:after {
         content: '\00bb';
         position: absolute;
         opacity: 0;
@@ -139,11 +155,14 @@
         transition: 0.5s;
     }
 
-    .button:hover span {
+
+
+    .button:hover span.right {
         padding-right: 25px;
     }
 
-    .button:hover span:after {
+
+    .button:hover span.right:after {
         opacity: 1;
         right: 0;
     }
@@ -180,11 +199,20 @@
     .nav-tabs>li>a {
         padding: 12px;
     }
+
+    .legend {
+        fill: none;
+        border-radius: 3px;
+        stroke: #0074D9;
+        stroke-width: 1px;
+    }
     
 
     </style>
 
     <script src="https://d3js.org/d3.v4.min.js"></script>
+    <script src="https://cdn.rawgit.com/eligrey/canvas-toBlob.js/f1a01896135ab378aa5c0118eadd81da55e698d8/canvas-toBlob.js"></script>
+    <script src="https://cdn.rawgit.com/eligrey/FileSaver.js/e9d941381475b5df8b7d7691013401e171014e89/FileSaver.min.js"></script>
 
     <script type="text/javascript" src="http://code.jquery.com/jquery-latest.js"></script>
     <script src="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
@@ -200,16 +228,26 @@
                 <input class="button" type=submit value=Upload>
             </form>
         </div>
-        <form style="text-align: center;" class="Column file" name="load">
-            <select style="margin: auto;" name="file">
-                {% for x in file_list %}
-                    <option value="{{ x }}">{{ x }}</option>
-                {% endfor %}
-            </select>
-            <button style="margin: auto;" class="button" type="submit">Load Data</button>
-        </form>
+        <div class="Column">
+            <div class="Row">
+                <form style="text-align: center;" class="file" name="load">
+                    <select style="margin: auto;" name="file">
+                        {% for x in file_list %}
+                            <option value="{{ x }}">{{ x }}</option>
+                        {% endfor %}
+                    </select>
+                    <button style="margin: auto;" class="button" type="submit">Load Data</button>
+                </form>
+            </div>
+            <div class="Row" style="text-align: center;">
+                <button style="margin: auto; margin-right: 4px" class="button solver-button" type="button"><span class="right">SATETLITE</span></button>
+            </div>
+
+        </div>
+
+
         <div style="text-align: right;" class="Column solver">
-            <button style="margin: auto; margin-right: 4px" class="button solver-button" type="button" onclick="solve()"><span>SAT Solve</span></button>
+            <button style="margin: auto; margin-right: 4px" class="button solver-button" type="button" onclick="solve()"><span class="right">SAT Solve</span></button>
             <p style="margin-right: 10px" class="result">?</p>
         </div>
     </div>
@@ -222,47 +260,74 @@
             <div class="tab-content">
                 <div class="tab-pane active Row" id="a_tab">
                     <acontent>
-                        <div style="float: left" class="graph">
-                            <h2 style="text-align:center;">ORIGINAL</h2>
-                            <h3 style="text-align:center;" class="problem_size factor non-satelited">...</h3>
-                            <svg width="900" height="700" id="factor"></svg>
-                        </div>
-                        <div style="float: right" class="graph">
-                            <h2 style="text-align:center;">SATELITED</h2>
-                            <h3 style="text-align:center;" class="problem_size factor satelited">...</h3>
-                            <svg width="900" height="700" id="factor_satelited"></svg>
+                        <div class="Row">
+                            <div class="subject Column">
+                                <div class="visualisation">
+                                    <div class="description">
+                                        <h2 style="text-align:center;">
+                                            ORIGINAL
+                                            {% if selected != None %}
+                                                <td><a href="{{ url_for('download', filename='raw/' + selected) }}">.cnf</a></td>
+                                                <td><a href="#" id="saveButtonFactor">.png</a></td>
+                                            {% endif %}
+                                        </h2>
+                                        <h3 style="text-align:center;" class="problem_size factor non-satelited">...</h3>
+                                    </div>
+                                    <div>
+                                        <svg width="1000" height="1200" id="factor" />
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="graph Column">
+                                <div class="description">
+                                    <h2 style="text-align:center;">
+                                        SATELITED
+                                        {% if selected != None %}
+                                            <td><a href="{{ url_for('download', filename= 'satelited/' + selected) }}">.cnf</a></td>
+                                            <td><a href="#" id="saveButtonFactorSatelited">.png</a></td>
+                                        {% endif %}
+                                    </h2>
+                                    <h3 style="text-align:center;" class="problem_size factor satelited">...</h3>
+                                </div>
+                                <div>
+                                    <svg width="1000" height="1200" id="factor_satelited"/>
+                                </div>
+                            </div>
                         </div>
                     </acontent>
                 </div>
                 <div class="tab-pane" id="b_tab">
                     <bcontent>
-                        <div style="float: left" class="graph">
-                            <h2 style="text-align:center;">ORIGINAL</h2>
-                            <h3 style="text-align:center;" class="problem_size interaction non-satelited">...</h3>
-                            <svg width="900" height="700" id="interaction"></svg>
+                        <div class="Row">
+                            <div class="subject Column">
+                                <h2 style="text-align:center;">ORIGINAL</h2>
+                                <h3 style="text-align:center;" class="problem_size interaction non-satelited">...</h3>
+                                <svg width="1000" height="1200" id="interaction"></svg>
+                                <button style="text-align:center;" class="button"  id='saveButtonInteraction'>Export SAT Interaction visualization to PNG</button>
+                            </div>
+                            <div class="graph Column">
+                                 <h2 style="text-align:center;">SATELITED</h2>
+                                 <h3 style="text-align:center;" class="problem_size interaction satelited">...</h3>
+                                 <svg width="1000" height="1200" id="interaction_satelited"></svg>
+                            </div>
                         </div>
-                         <div style="float: right" class="graph">
-                             <h2 style="text-align:center;">SATELITED</h2>
-                             <h3 style="text-align:center;" class="problem_size interaction satelited">...</h3>
-                             <svg width="900" height="700" id="interaction_satelited"></svg>
-                         </div>
                     </bcontent>
                 </div>
             </div>
         </div>
 
     <script>
+            // import of "python/Flask" variable
             selected = '{{selected}}'
             $.ajaxSetup ({
-                // Disable caching of AJAX responses
-                // Used when debugging
                 cache: false
             });
             var initFactor = false, initInteraction = false;
 
             $.getScript("{{ url_for('static', filename='scripts/factor.js')}}");
             $.getScript("{{ url_for('static', filename='scripts/factor_satelited.js')}}");
-            
+
             $(".atab").click(function() {
                 $.getScript("{{ url_for('static', filename='scripts/factor.js')}}");
                 $.getScript("{{ url_for('static', filename='scripts/factor_satelited.js')}}");
@@ -278,10 +343,18 @@
         function solve() {
             d3.json("/sat/solve/" + selected, function(error, solution) {
                 if(solution !== "UNSAT"){
-                    d3.select(".result").html("SAT").attr("class", "result result-sat");
-                    solution.forEach(function(x) { d3.select("#" + x.id).attr("class", x.value + "node") });
+                    d3.select(".result")
+                        .html("SAT")
+                        .attr("class", "result result-sat");
+                    solution.forEach(function(x) {
+                        d3.select(".tab-pane.active")
+                            .select("#" + x.id)
+                            .attr("class", x.value + "node")
+                    });
                 } else {
-                 d3.select(".result").html("UNSAT").attr("class", "result result-unsat");
+                 d3.select(".result")
+                    .html("UNSAT")
+                    .attr("class", "result result-unsat");
                  }
             });
         }

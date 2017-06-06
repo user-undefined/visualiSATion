@@ -8,6 +8,10 @@ from flask import Flask, render_template, request, redirect, url_for
 import os
 import socket
 import json
+
+from flask import current_app
+from flask import send_from_directory
+
 from utils import problem
 from subprocess import call
 import pycosat
@@ -18,9 +22,10 @@ app = Flask(__name__)
 APP_ROOT_FOLDER = os.path.dirname(__file__)
 TEMPLATE_FOLDER = os.path.join(APP_ROOT_FOLDER, 'templates')
 STATIC_FOLDER = os.path.join(APP_ROOT_FOLDER, 'static')
-UPLOAD_FOLDER = os.path.join(STATIC_FOLDER, 'data')
+UPLOAD_FOLDER = os.path.join(STATIC_FOLDER, 'data/raw')
+DOWNLOAD_FOLDER = os.path.join(STATIC_FOLDER, 'data')
 BIN_FOLDER = os.path.join(APP_ROOT_FOLDER, 'bin')
-ALLOWED_EXTENSIONS = set(['cnf'])
+ALLOWED_EXTENSIONS = set(['cnf', 'dimacs'])
 
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
@@ -55,6 +60,10 @@ def list_data(path):
 
     return l
 
+@app.route('/download/<path:filename>', methods=['GET', 'POST'])
+def download(filename):
+    uploads = os.path.join(current_app.root_path, app.config['DOWNLOAD_FOLDER'])
+    return send_from_directory(directory=uploads, filename=filename)
 
 @app.route("/visualisation", methods=['GET', 'POST'])
 def show():
