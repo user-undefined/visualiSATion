@@ -10,7 +10,7 @@ from shutil import copyfile
 UTILS_FOLDER = os.path.dirname(__file__)
 APP_ROOT_FOLDER = os.path.abspath(__file__ + "/../../")
 STATIC_FOLDER = os.path.join(APP_ROOT_FOLDER, 'static')
-BIN_FOLDER = os.path.join(STATIC_FOLDER, 'data/raw')
+BIN_FOLDER = os.path.join(STATIC_FOLDER, 'bin')
 UPLOAD_FOLDER = os.path.join(STATIC_FOLDER, 'data/raw')
 
 
