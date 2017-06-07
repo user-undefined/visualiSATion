@@ -206,7 +206,37 @@
         stroke: #0074D9;
         stroke-width: 1px;
     }
-    
+
+    #progress {
+        position: fixed;
+        top: 0;
+        left: -6px;
+        width: 0%;
+        height: 2px;
+        background: red;
+    }
+
+    #progress:before,
+    #progress:after {
+        content: "";
+        position: absolute;
+        height: 2px;
+        opacity: 0.6;
+        box-shadow: red 1px 0 6px 1px;
+        border-radius: 100%;
+    }
+
+    #progress:before {
+        width: 20px;
+        right: 0;
+        clip: rect(-6px, 22px, 14px, 10px);
+    }
+
+    #progress:after {
+        width: 180px;
+        right: -80px;
+        clip: rect(-6px, 90px, 14px, -6px);
+    }
 
     </style>
 
@@ -240,7 +270,7 @@
                 </form>
             </div>
             <div class="Row" style="text-align: center;">
-                <button style="margin: auto; margin-right: 4px" class="button solver-button" type="button"><span class="right">SATETLITE</span></button>
+                <button style="margin: auto; margin-right: 4px; margin-top: 4px;" class="button solver-button" type="button" onclick="satelite()"><span class="right">SATETLITE</span></button>
             </div>
 
         </div>
@@ -267,11 +297,18 @@
                                         <h2 style="text-align:center;">
                                             ORIGINAL
                                             {% if selected != None %}
+                                                <a href="#" id="showButtonFactor">show</a>
                                                 <td><a href="{{ url_for('download', filename='raw/' + selected) }}">.cnf</a></td>
                                                 <td><a href="#" id="saveButtonFactor">.png</a></td>
                                             {% endif %}
                                         </h2>
-                                        <h3 style="text-align:center;" class="problem_size factor non-satelited">...</h3>
+                                        {% if original == None %}
+                                            <h3 style="text-align:center;" class="problem_size factor non-satelited">...</h3>
+                                        {% else %}
+                                            <h3 style="text-align:center;" class="problem_size factor non-satelited">
+                                                Variables: {{ original['num_vars'] }} Clauses: {{ original['num_clauses'] }}
+                                            </h3>
+                                        {% endif %}
                                     </div>
                                     <div>
                                         <svg width="1000" height="1200" id="factor" />
@@ -283,9 +320,12 @@
                                 <div class="description">
                                     <h2 style="text-align:center;">
                                         SATELITED
-                                        {% if selected != None %}
-                                            <td><a href="{{ url_for('download', filename= 'satelited/' + selected) }}">.cnf</a></td>
+                                        {% if selected_satelited != None %}
+                                        <div id="sateliteLinks" style="display: none;">
+                                            <a href="#" id="showButtonFactorSatelited">show</a>
+                                            <td><a href="{{ url_for('download', filename= 'satelited/' + selected_satelited) }}">.cnf</a></td>
                                             <td><a href="#" id="saveButtonFactorSatelited">.png</a></td>
+                                        </div>
                                         {% endif %}
                                     </h2>
                                     <h3 style="text-align:center;" class="problem_size factor satelited">...</h3>
@@ -301,13 +341,35 @@
                     <bcontent>
                         <div class="Row">
                             <div class="subject Column">
-                                <h2 style="text-align:center;">ORIGINAL</h2>
-                                <h3 style="text-align:center;" class="problem_size interaction non-satelited">...</h3>
+                                <div id="progress">PROGRES</div>
+                                <h2 style="text-align:center;">
+                                    ORIGINAL
+                                    {% if selected != None %}
+                                        <a href="#" id="showButtonInteraction">show</a>
+                                        <td><a href="{{ url_for('download', filename='raw/' + selected) }}">.cnf</a></td>
+                                        <td><a href="#" id="saveButtonInteraction">.png</a></td>
+                                    {% endif %}
+                                </h2>
+                                {% if original == None %}
+                                    <h3 style="text-align:center;" class="problem_size interaction non-satelited">...</h3>
+                                {% else %}
+                                    <h3 style="text-align:center;" class="problem_size interaction non-satelited">
+                                        Variables: {{ original['num_vars'] }} Clauses: {{ original['num_clauses'] }}
+                                    </h3>
+                                {% endif %}
                                 <svg width="1000" height="1200" id="interaction"></svg>
-                                <button style="text-align:center;" class="button"  id='saveButtonInteraction'>Export SAT Interaction visualization to PNG</button>
                             </div>
                             <div class="graph Column">
-                                 <h2 style="text-align:center;">SATELITED</h2>
+                                 <h2 style="text-align:center;">
+                                     SATELITED
+                                     {% if selected_satelited != None %}
+                                        <div id="sateliteLinks" style="display: none;">
+                                            <a href="#" id="showButtonInteractionSatelited">show</a>
+                                            <td><a href="{{ url_for('download', filename= 'satelited/' + selected_satelited) }}">.cnf</a></td>
+                                            <td><a href="#" id="saveButtonInteractionSatelited">.png</a></td>
+                                        </div>
+                                     {% endif %}
+                                 </h2>
                                  <h3 style="text-align:center;" class="problem_size interaction satelited">...</h3>
                                  <svg width="1000" height="1200" id="interaction_satelited"></svg>
                             </div>
@@ -318,44 +380,81 @@
         </div>
 
     <script>
-            // import of "python/Flask" variable
-            selected = '{{selected}}'
-            $.ajaxSetup ({
-                cache: false
-            });
-            var initFactor = false, initInteraction = false;
+        // import of "python/Flask" variable
+        var selected = '{{selected}}';
+        $.ajaxSetup({cache: false});
+        showTab('factor');
 
-            $.getScript("{{ url_for('static', filename='scripts/factor.js')}}");
-            $.getScript("{{ url_for('static', filename='scripts/factor_satelited.js')}}");
+        $(".atab").click(function () { showTab('factor') });
+        $(".btab").click(function () { showTab('interaction') });
 
-            $(".atab").click(function() {
-                $.getScript("{{ url_for('static', filename='scripts/factor.js')}}");
-                $.getScript("{{ url_for('static', filename='scripts/factor_satelited.js')}}");
-            })
-
-            $(".btab").click(function() {
-                $.getScript("{{ url_for('static', filename='scripts/interaction.js')}}");
-                $.getScript("{{ url_for('static', filename='scripts/interaction_satelited.js')}}");
-            })
-    </script>
-
-    <script>
         function solve() {
-            d3.json("/sat/solve/" + selected, function(error, solution) {
-                if(solution !== "UNSAT"){
+            d3.json("/sat/solve/" + selected, function (error, solution) {
+                if (solution !== "UNSAT") {
                     d3.select(".result")
                         .html("SAT")
                         .attr("class", "result result-sat");
-                    solution.forEach(function(x) {
+                    solution.forEach(function (x) {
                         d3.select(".tab-pane.active")
                             .select("#" + x.id)
                             .attr("class", x.value + "node")
                     });
                 } else {
-                 d3.select(".result")
-                    .html("UNSAT")
-                    .attr("class", "result result-unsat");
-                 }
+                    d3.select(".result")
+                        .html("UNSAT")
+                        .attr("class", "result result-unsat");
+                }
+            });
+        }
+
+        function showGraph(graphType) {
+            var scriptName,
+                buttonSelector;
+
+            switch(graphType) {
+                case 'factor':
+                    scriptName = 'factor.js';
+                    buttonSelector = '#showButtonFactor';
+                    break;
+                case 'factor_satelited':
+                    scriptName = 'factor_satelited.js';
+                    buttonSelector = '#showButtonFactorSatelited';
+                    break;
+                case 'interaction':
+                    scriptName = 'interaction.js';
+                    buttonSelector = '#showButtonInteraction';
+                    break;
+                case 'interaction_satelited':
+                    scriptName = 'interaction_satelited.js';
+                    buttonSelector = '#showButtonInteractionSatelited';
+                    break;
+            }
+            $(buttonSelector).on('click', function () {
+                var scriptPath = '/static/scripts/' + scriptName;
+                $(buttonSelector).remove();
+                $.getScript(scriptPath);
+            });
+        }
+
+        function showTab(tabType) {
+            switch(tabType) {
+                case 'factor':
+                    showGraph('factor');
+                    showGraph('factor_satelited');
+                    break;
+                case 'interaction':
+                    showGraph('interaction');
+                    showGraph('interaction_satelited');
+                    break;
+            }
+        }
+
+        function satelite() {
+            d3.json("/load/data/satelite/" + selected, function(error, meta) {
+                d3.selectAll('#sateliteLinks')
+                    .style('display', 'initial');
+                d3.selectAll('.problem_size.satelited')
+                    .html("Variables: " + meta.num_vars + " Clauses: " + meta.num_clauses);
             });
         }
     </script>

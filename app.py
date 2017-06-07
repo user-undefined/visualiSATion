@@ -2,18 +2,14 @@
 
 from __future__ import print_function
 
-import urllib2
-
 from flask import Flask, render_template, request, redirect, url_for
 import os
-import socket
 import json
+import re
 
-from flask import current_app
 from flask import send_from_directory
 
 from utils import problem
-from subprocess import call
 import pycosat
 from utils.problem import sign
 
@@ -22,12 +18,13 @@ app = Flask(__name__)
 APP_ROOT_FOLDER = os.path.dirname(__file__)
 TEMPLATE_FOLDER = os.path.join(APP_ROOT_FOLDER, 'templates')
 STATIC_FOLDER = os.path.join(APP_ROOT_FOLDER, 'static')
-UPLOAD_FOLDER = os.path.join(STATIC_FOLDER, 'data/raw')
-DOWNLOAD_FOLDER = os.path.join(STATIC_FOLDER, 'data')
+DATA_FOLDER = os.path.join(STATIC_FOLDER, 'data')
+RAW_FOLDER = os.path.join(DATA_FOLDER, 'raw')
+SATELITED_FOLDER = os.path.join(DATA_FOLDER, 'satelited')
 BIN_FOLDER = os.path.join(APP_ROOT_FOLDER, 'bin')
 ALLOWED_EXTENSIONS = set(['cnf', 'dimacs'])
 
-app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+app.config['RAW_FOLDER'] = RAW_FOLDER
 
 
 @app.route("/")
@@ -60,21 +57,26 @@ def list_data(path):
 
     return l
 
+
 @app.route('/download/<path:filename>', methods=['GET', 'POST'])
 def download(filename):
-    uploads = os.path.join(current_app.root_path, app.config['DOWNLOAD_FOLDER'])
-    return send_from_directory(directory=uploads, filename=filename)
+    return send_from_directory(directory=DATA_FOLDER, filename=filename)
+
 
 @app.route("/visualisation", methods=['GET', 'POST'])
 def show():
-    call(['rm', '-f', os.path.join(BIN_FOLDER, 'pre-satelited.cnf')])
     selected = request.args.get('file')
-    file_list = list_data(UPLOAD_FOLDER)
+    if selected:
+        selected_satelited = re.sub(r'.cnf', '_satelited.cnf', selected)
+    else:
+        selected_satelited = None
+    original = json.loads(original_data(selected))
+    file_list = list_data(RAW_FOLDER)
     if request.method == 'POST':
         file = request.files['file']
         if file and allowed_file(file.filename):
             filename = file.filename
-            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+            file.save(os.path.join(app.config['RAW_FOLDER'], filename))
             return redirect(url_for('show'))
 
     # Put selected file on first place in file_list
@@ -82,12 +84,16 @@ def show():
         f, s = 0, file_list.index(selected)
         file_list[s], file_list[f] = file_list[f], file_list[s]
 
-    return render_template("visualisation.html", file_list=file_list, selected=selected)
+    return render_template("visualisation.html",
+                           file_list=file_list,
+                           selected=selected,
+                           selected_satelited=selected_satelited,
+                           original=original)
 
 
 @app.route("/sat/solve/<file>")
 def solve(file):
-    file_path = os.path.join(UPLOAD_FOLDER, file)
+    file_path = os.path.join(RAW_FOLDER, file)
     clauses = problem.read(file_path)["clauses"]
     solution = pycosat.solve(clauses)
     result = []
@@ -98,6 +104,18 @@ def solve(file):
     else:
         result = solution
     return json.dumps(result)
+
+
+@app.route("/load/data/original/<file>")
+def original_data(file):
+    problem_metadata = problem.get_metadata(file, satelite=False)
+    return json.dumps(problem_metadata)
+
+
+@app.route("/load/data/satelite/<file>")
+def satelited_data(file):
+    problem_metadata = problem.get_metadata(file, satelite=True)
+    return json.dumps(problem_metadata)
 
 
 @app.route("/visual/repr/factor/<file>")
@@ -125,4 +143,4 @@ def graph_interaction_satelited(file):
 
 
 if __name__ == "__main__":
-    app.run(host='0.0.0.0', port=80)
+    app.run(host='0.0.0.0')

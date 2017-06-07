@@ -1,17 +1,17 @@
 #!/usr/bin/env python
 
 from mxklabs import dimacs
-import json
-from sys import platform as _platform
+import re
 from subprocess import call
 import os.path
-from shutil import copyfile
 
 UTILS_FOLDER = os.path.dirname(__file__)
 APP_ROOT_FOLDER = os.path.abspath(__file__ + "/../../")
 STATIC_FOLDER = os.path.join(APP_ROOT_FOLDER, 'static')
-BIN_FOLDER = os.path.join(STATIC_FOLDER, 'bin')
-UPLOAD_FOLDER = os.path.join(STATIC_FOLDER, 'data/raw')
+DATA_FOLDER = os.path.join(STATIC_FOLDER, 'data')
+RAW_FOLDER = os.path.join(DATA_FOLDER, 'raw')
+SATELITED_FOLDER = os.path.join(DATA_FOLDER, 'satelited')
+BIN_FOLDER = os.path.join(APP_ROOT_FOLDER, 'bin')
 
 
 def read(filename):
@@ -45,11 +45,12 @@ def generate_interaction_graph(data):
     interaction_graph["num_clauses"] = data["num_clauses"]
     return interaction_graph
 
+
 def satelite_it(dimacs_file_path):
     satelite_path = os.path.join(BIN_FOLDER, 'SatELite_v1.0_linux')
-    SATELITED_FOLDER = os.path.join(STATIC_FOLDER, 'data/satelited/')
-    satelited_file_path = os.path.join(SATELITED_FOLDER, 'pre-satelited.cnf')
-    call([satelite_path, dimacs_file_path, satelited_file_path])
+    file_name = re.sub(r'.cnf', '_satelited.cnf', os.path.basename(dimacs_file_path))
+    satelited_file_path = os.path.join(SATELITED_FOLDER, file_name)
+    call([satelite_path, dimacs_file_path, satelited_file_path], stdout=open(os.devnull, 'wb'))
 
     return satelited_file_path
 
@@ -97,10 +98,11 @@ def nodes(clauses, num_clauses, num_literals):
 
 
 def prepare_graph_data(file, graph_type, satelite):
-    cnf_file_path = os.path.join(UPLOAD_FOLDER, file)
+    cnf_file_path = os.path.join(RAW_FOLDER, file)
+
     if satelite:
-        s = satelite_it(cnf_file_path)
-        cnf_file_path = s
+        cnf_file_path = os.path.join(SATELITED_FOLDER, file)
+        cnf_file_path = re.sub(r'.cnf', '_satelited.cnf', cnf_file_path.rstrip())
 
     cnf = read(cnf_file_path)
     if graph_type == "factor":
@@ -109,3 +111,17 @@ def prepare_graph_data(file, graph_type, satelite):
         graph_data = generate_interaction_graph(cnf)
 
     return graph_data
+
+
+def get_metadata(file, satelite):
+    if not file:
+        return None
+
+    if satelite:
+        file = satelite_it(os.path.join(RAW_FOLDER, file))
+    cnf = read(os.path.join(RAW_FOLDER, file))
+    meta = {}
+    meta.update({"num_vars": cnf["num_vars"]})
+    meta.update({"num_clauses": cnf["num_clauses"]})
+
+    return meta
